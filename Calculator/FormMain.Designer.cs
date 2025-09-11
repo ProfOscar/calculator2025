@@ -39,6 +39,7 @@
             this.MaximizeBox = false;
             this.Name = "FormMain";
             this.Text = "Calcolatrice";
+            this.Load += new System.EventHandler(this.FormMain_Load);
             this.ResumeLayout(false);
 
         }
