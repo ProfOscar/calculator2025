@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -32,10 +33,12 @@ namespace Calculator
         {
             public char Content;
             public Color Color;
-            public BtnStruct(char content, Color color)
+            public bool IsNumber;
+            public BtnStruct(char content, Color color, bool isNumber = false)
             {
                 this.Content = content;
                 this.Color = color;
+                this.IsNumber = isNumber;
             }
             public override string ToString()
             {
@@ -47,10 +50,10 @@ namespace Calculator
         {
             { new BtnStruct('%', OPERATION_BKG), new BtnStruct('\u0152', OPERATION_BKG), new BtnStruct('C', OPERATION_BKG), new BtnStruct('\u232B', OPERATION_BKG) },
             { new BtnStruct('\u215F', OPERATION_BKG), new BtnStruct('\u00B2', OPERATION_BKG), new BtnStruct('\u221A', OPERATION_BKG), new BtnStruct('\u00F7', OPERATION_BKG) },
-            { new BtnStruct('7', NUMBER_BKG), new BtnStruct('8', NUMBER_BKG), new BtnStruct('9', NUMBER_BKG), new BtnStruct('x', OPERATION_BKG) },
-            { new BtnStruct('4', NUMBER_BKG), new BtnStruct('5', NUMBER_BKG), new BtnStruct('6', NUMBER_BKG), new BtnStruct('-', OPERATION_BKG) },
-            { new BtnStruct('1', NUMBER_BKG), new BtnStruct('2', NUMBER_BKG), new BtnStruct('3', NUMBER_BKG), new BtnStruct('+', OPERATION_BKG) },
-            { new BtnStruct('\u00B1', NUMBER_BKG), new BtnStruct('0', NUMBER_BKG), new BtnStruct(',', NUMBER_BKG), new BtnStruct('=', EQUAL_BKG) }
+            { new BtnStruct('7', NUMBER_BKG, true), new BtnStruct('8', NUMBER_BKG), new BtnStruct('9', NUMBER_BKG, true), new BtnStruct('x', OPERATION_BKG) },
+            { new BtnStruct('4', NUMBER_BKG, true), new BtnStruct('5', NUMBER_BKG, true), new BtnStruct('6', NUMBER_BKG), new BtnStruct('-', OPERATION_BKG) },
+            { new BtnStruct('1', NUMBER_BKG, true), new BtnStruct('2', NUMBER_BKG, true), new BtnStruct('3', NUMBER_BKG, true), new BtnStruct('+', OPERATION_BKG) },
+            { new BtnStruct('\u00B1', NUMBER_BKG), new BtnStruct('0', NUMBER_BKG, true), new BtnStruct(',', NUMBER_BKG), new BtnStruct('=', EQUAL_BKG) }
         };
 
         public FormMain()
@@ -72,6 +75,7 @@ namespace Calculator
             resultLabel.AutoSize = false;
             resultLabel.Location = new Point(0, 0);
             resultLabel.Size = new Size(this.Width, 100);
+            resultLabel.Padding = new Padding(18);
             this.Controls.Add(resultLabel);
         }
 
@@ -93,6 +97,7 @@ namespace Calculator
                     // button.Text = buttons[i,j].ToString();
                     button.Text = buttons[i,j].Content.ToString();
                     button.BackColor = buttons[i,j].Color;
+                    button.Tag = buttons[i,j];
                     button.Click += Button_Click;
                     Controls.Add(button);
                     posX += btnWidth;
@@ -104,7 +109,11 @@ namespace Calculator
         private void Button_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
-            resultLabel.Text += btn.Text;
+            BtnStruct btnStruct = (BtnStruct)btn.Tag;
+            if (btnStruct.IsNumber)
+            {
+                resultLabel.Text += btn.Text;
+            }
         }
     }
 }
