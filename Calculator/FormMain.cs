@@ -85,6 +85,7 @@ namespace Calculator
             resultLabel.Location = new Point(0, 0);
             resultLabel.Size = new Size(this.Width, 100);
             resultLabel.Padding = new Padding(18);
+            resultLabel.Text = "0";
             this.Controls.Add(resultLabel);
         }
 
@@ -136,9 +137,29 @@ namespace Calculator
         {
             Button btn = (Button)sender;
             BtnStruct btnStruct = (BtnStruct)btn.Tag;
-            if (btnStruct.Type == SymbolType.Number)
+            switch (btnStruct.Type)
             {
-                resultLabel.Text += btn.Text;
+                case SymbolType.Number:
+                    if (resultLabel.Text == "0") resultLabel.Text = "";
+                    resultLabel.Text += btn.Text;
+                    break;
+                case SymbolType.Operator:
+                    break;
+                case SymbolType.EqualSign:
+                    break;
+                case SymbolType.DecimalPoint:
+                    if (!resultLabel.Text.Contains(",")) resultLabel.Text += ",";
+                    break;
+                case SymbolType.PlusMinusSign:
+                    if (!resultLabel.Text.Contains("-"))
+                        resultLabel.Text = "-" + resultLabel.Text;
+                    break;
+                case SymbolType.Backspace:
+                    break;
+                case SymbolType.Undefined:
+                    break;
+                default:
+                    break;
             }
         }
     }
