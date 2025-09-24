@@ -25,20 +25,29 @@ namespace Calculator
         //    { '\u00B1', '0', ',', '=' }
         //};
 
-        static private Color OPERATION_BKG = Color.LightGray;
+        static private Color OPERATOR_BKG = Color.LightGray;
         static private Color NUMBER_BKG = Color.WhiteSmoke;
         static private Color EQUAL_BKG = Color.LightSeaGreen;
+
+        public enum SymbolType
+        {
+            Number,
+            Operator,
+            EqualSign,
+            DecimalPoint,
+            PlusMinusSign,
+            Backspace,
+            Undefined
+        }
 
         public struct BtnStruct
         {
             public char Content;
-            public Color Color;
-            public bool IsNumber;
-            public BtnStruct(char content, Color color, bool isNumber = false)
+            public SymbolType Type;
+            public BtnStruct(char content, SymbolType type = SymbolType.Undefined)
             {
                 this.Content = content;
-                this.Color = color;
-                this.IsNumber = isNumber;
+                this.Type = type;
             }
             public override string ToString()
             {
@@ -48,12 +57,12 @@ namespace Calculator
 
         private BtnStruct[,] buttons =
         {
-            { new BtnStruct('%', OPERATION_BKG), new BtnStruct('\u0152', OPERATION_BKG), new BtnStruct('C', OPERATION_BKG), new BtnStruct('\u232B', OPERATION_BKG) },
-            { new BtnStruct('\u215F', OPERATION_BKG), new BtnStruct('\u00B2', OPERATION_BKG), new BtnStruct('\u221A', OPERATION_BKG), new BtnStruct('\u00F7', OPERATION_BKG) },
-            { new BtnStruct('7', NUMBER_BKG, true), new BtnStruct('8', NUMBER_BKG), new BtnStruct('9', NUMBER_BKG, true), new BtnStruct('x', OPERATION_BKG) },
-            { new BtnStruct('4', NUMBER_BKG, true), new BtnStruct('5', NUMBER_BKG, true), new BtnStruct('6', NUMBER_BKG), new BtnStruct('-', OPERATION_BKG) },
-            { new BtnStruct('1', NUMBER_BKG, true), new BtnStruct('2', NUMBER_BKG, true), new BtnStruct('3', NUMBER_BKG, true), new BtnStruct('+', OPERATION_BKG) },
-            { new BtnStruct('\u00B1', NUMBER_BKG), new BtnStruct('0', NUMBER_BKG, true), new BtnStruct(',', NUMBER_BKG), new BtnStruct('=', EQUAL_BKG) }
+            { new BtnStruct('%'), new BtnStruct('\u0152'), new BtnStruct('C'), new BtnStruct('\u232B', SymbolType.Backspace) },
+            { new BtnStruct('\u215F'), new BtnStruct('\u00B2'), new BtnStruct('\u221A'), new BtnStruct('\u00F7', SymbolType.Operator) },
+            { new BtnStruct('7', SymbolType.Number), new BtnStruct('8', SymbolType.Number), new BtnStruct('9', SymbolType.Number), new BtnStruct('x', SymbolType.Operator) },
+            { new BtnStruct('4', SymbolType.Number), new BtnStruct('5', SymbolType.Number), new BtnStruct('6', SymbolType.Number), new BtnStruct('-', SymbolType.Operator) },
+            { new BtnStruct('1', SymbolType.Number), new BtnStruct('2', SymbolType.Number), new BtnStruct('3', SymbolType.Number), new BtnStruct('+', SymbolType.Operator) },
+            { new BtnStruct('\u00B1', SymbolType.PlusMinusSign), new BtnStruct('0', SymbolType.Number), new BtnStruct(',', SymbolType.DecimalPoint), new BtnStruct('=', SymbolType.EqualSign) }
         };
 
         public FormMain()
@@ -96,7 +105,24 @@ namespace Calculator
                     button.Font = new Font("Segoe UI", 16);
                     // button.Text = buttons[i,j].ToString();
                     button.Text = buttons[i,j].Content.ToString();
-                    button.BackColor = buttons[i,j].Color;
+                    switch (buttons[i, j].Type)
+                    {
+                        case SymbolType.Number:
+                            button.BackColor = NUMBER_BKG;
+                            break;
+                        case SymbolType.Operator:
+                            button.BackColor = OPERATOR_BKG;
+                            break;
+                        case SymbolType.EqualSign:
+                            button.BackColor = EQUAL_BKG;
+                            break;
+                        case SymbolType.DecimalPoint:
+                            button.BackColor = NUMBER_BKG;
+                            break;
+                        case SymbolType.PlusMinusSign:
+                            button.BackColor = NUMBER_BKG;
+                            break;
+                    }
                     button.Tag = buttons[i,j];
                     button.Click += Button_Click;
                     Controls.Add(button);
@@ -110,7 +136,7 @@ namespace Calculator
         {
             Button btn = (Button)sender;
             BtnStruct btnStruct = (BtnStruct)btn.Tag;
-            if (btnStruct.IsNumber)
+            if (btnStruct.Type == SymbolType.Number)
             {
                 resultLabel.Text += btn.Text;
             }
