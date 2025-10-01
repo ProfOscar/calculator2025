@@ -13,21 +13,13 @@ namespace Calculator
 {
     public partial class FormMain : Form
     {
-        Label lblResult;
-
-        //private char[,] buttons =
-        //{
-        //    { '%', '\u0152', 'C', '\u232B' },
-        //    { '\u215F', '\u00B2', '\u221A', '\u00F7' },
-        //    { '7', '8', '9', 'x' },
-        //    { '4', '5', '6', '-' },
-        //    { '1', '2', '3', '+' },
-        //    { '\u00B1', '0', ',', '=' }
-        //};
-
         static private Color OPERATOR_BKG = Color.LightGray;
         static private Color NUMBER_BKG = Color.WhiteSmoke;
         static private Color EQUAL_BKG = Color.LightSeaGreen;
+
+        const float LBLRESULT_DEFAULT_FONT_SIZE = 36;
+
+        Label lblResult;
 
         public enum SymbolType
         {
@@ -37,6 +29,8 @@ namespace Calculator
             DecimalPoint,
             PlusMinusSign,
             Backspace,
+            ClearAll,
+            ClearEntry,
             Undefined
         }
 
@@ -57,7 +51,7 @@ namespace Calculator
 
         private BtnStruct[,] buttons =
         {
-            { new BtnStruct('%'), new BtnStruct('\u0152'), new BtnStruct('C'), new BtnStruct('\u232B', SymbolType.Backspace) },
+            { new BtnStruct('%'), new BtnStruct('\u0152', SymbolType.ClearEntry), new BtnStruct('C', SymbolType.ClearAll), new BtnStruct('\u232B', SymbolType.Backspace) },
             { new BtnStruct('\u215F'), new BtnStruct('\u00B2'), new BtnStruct('\u221A'), new BtnStruct('\u00F7', SymbolType.Operator) },
             { new BtnStruct('7', SymbolType.Number), new BtnStruct('8', SymbolType.Number), new BtnStruct('9', SymbolType.Number), new BtnStruct('x', SymbolType.Operator) },
             { new BtnStruct('4', SymbolType.Number), new BtnStruct('5', SymbolType.Number), new BtnStruct('6', SymbolType.Number), new BtnStruct('-', SymbolType.Operator) },
@@ -79,14 +73,29 @@ namespace Calculator
         private void MakeResultLabel()
         {
             lblResult = new Label();
-            lblResult.Font = new Font("Segoe UI", 22, FontStyle.Bold);
+            lblResult.Font = new Font("Segoe UI", LBLRESULT_DEFAULT_FONT_SIZE, FontStyle.Regular);
             lblResult.TextAlign = ContentAlignment.MiddleRight;
             lblResult.AutoSize = false;
             lblResult.Location = new Point(0, 0);
             lblResult.Size = new Size(this.Width, 100);
-            lblResult.Padding = new Padding(18);
+            lblResult.Padding = new Padding(0, 18, 12, 18);
             lblResult.Text = "0";
+            lblResult.TextChanged += LblResult_TextChanged;
             this.Controls.Add(lblResult);
+        }
+
+        private void LblResult_TextChanged(object sender, EventArgs e)
+        {
+            if (lblResult.Text.Length > 16) lblResult.Text = lblResult.Text.Substring(0, 16);   
+            if (lblResult.Text.Length > 11)
+            {
+                float delta = (lblResult.Text.Length - 11) * (float)2.8;
+                lblResult.Font = new Font("Segoe UI", LBLRESULT_DEFAULT_FONT_SIZE - delta, FontStyle.Regular);
+            }
+            else
+            {
+                lblResult.Font = new Font("Segoe UI", LBLRESULT_DEFAULT_FONT_SIZE, FontStyle.Regular);
+            }
         }
 
         private void MakeButtons(int nRow, int nCol)
@@ -162,9 +171,9 @@ namespace Calculator
                     if (lblResult.Text == "" || lblResult.Text == "-" || lblResult.Text == "-0")
                         lblResult.Text = "0";
                     break;
-                case SymbolType.Undefined:
-                    break;
-                default:
+                case SymbolType.ClearEntry:
+                case SymbolType.ClearAll:
+                    lblResult.Text = "0";
                     break;
             }
         }
