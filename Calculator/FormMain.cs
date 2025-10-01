@@ -13,7 +13,7 @@ namespace Calculator
 {
     public partial class FormMain : Form
     {
-        Label resultLabel;
+        Label lblResult;
 
         //private char[,] buttons =
         //{
@@ -78,15 +78,15 @@ namespace Calculator
 
         private void MakeResultLabel()
         {
-            resultLabel = new Label();
-            resultLabel.Font = new Font("Segoe UI", 22, FontStyle.Bold);
-            resultLabel.TextAlign = ContentAlignment.MiddleRight;
-            resultLabel.AutoSize = false;
-            resultLabel.Location = new Point(0, 0);
-            resultLabel.Size = new Size(this.Width, 100);
-            resultLabel.Padding = new Padding(18);
-            resultLabel.Text = "0";
-            this.Controls.Add(resultLabel);
+            lblResult = new Label();
+            lblResult.Font = new Font("Segoe UI", 22, FontStyle.Bold);
+            lblResult.TextAlign = ContentAlignment.MiddleRight;
+            lblResult.AutoSize = false;
+            lblResult.Location = new Point(0, 0);
+            lblResult.Size = new Size(this.Width, 100);
+            lblResult.Padding = new Padding(18);
+            lblResult.Text = "0";
+            this.Controls.Add(lblResult);
         }
 
         private void MakeButtons(int nRow, int nCol)
@@ -140,21 +140,27 @@ namespace Calculator
             switch (btnStruct.Type)
             {
                 case SymbolType.Number:
-                    if (resultLabel.Text == "0") resultLabel.Text = "";
-                    resultLabel.Text += btn.Text;
+                    if (lblResult.Text == "0") lblResult.Text = "";
+                    lblResult.Text += btn.Text;
                     break;
                 case SymbolType.Operator:
                     break;
                 case SymbolType.EqualSign:
                     break;
                 case SymbolType.DecimalPoint:
-                    if (!resultLabel.Text.Contains(",")) resultLabel.Text += ",";
+                    if (!lblResult.Text.Contains(",")) lblResult.Text += ",";
                     break;
                 case SymbolType.PlusMinusSign:
-                    if (!resultLabel.Text.Contains("-"))
-                        resultLabel.Text = "-" + resultLabel.Text;
+                    if (lblResult.Text != "0")
+                        if (!lblResult.Text.Contains("-"))
+                            lblResult.Text = "-" + lblResult.Text;
+                        else
+                            lblResult.Text = lblResult.Text.Substring(1);
                     break;
                 case SymbolType.Backspace:
+                    lblResult.Text = lblResult.Text.Substring(0, lblResult.Text.Length - 1);
+                    if (lblResult.Text == "" || lblResult.Text == "-" || lblResult.Text == "-0")
+                        lblResult.Text = "0";
                     break;
                 case SymbolType.Undefined:
                     break;
