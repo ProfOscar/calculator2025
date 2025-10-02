@@ -19,6 +19,8 @@ namespace Calculator
         static private Color EQUAL_BKG = Color.LightSeaGreen;
 
         const float LBLRESULT_DEFAULT_FONT_SIZE = 36;
+        const int LBLRESULT_DEFAULT_V_PADDING = 18;
+        const int LBLRESULT_DEFAULT_H_PADDING = 16;
 
         Label lblResult;
 
@@ -79,7 +81,8 @@ namespace Calculator
             lblResult.AutoSize = false;
             lblResult.Location = new Point(0, 0);
             lblResult.Size = new Size(this.Width, 100);
-            lblResult.Padding = new Padding(0, 18, 12, 18);
+            lblResult.Padding = new Padding(LBLRESULT_DEFAULT_H_PADDING, LBLRESULT_DEFAULT_V_PADDING,
+                    LBLRESULT_DEFAULT_H_PADDING, LBLRESULT_DEFAULT_V_PADDING);
             lblResult.Text = "0";
             lblResult.TextChanged += LblResult_TextChanged;
             this.Controls.Add(lblResult);
@@ -89,6 +92,8 @@ namespace Calculator
         {
             // Formattazione adeguata dei numeri con separatore decimale e separatore delle migliaia
             if (lblResult.Text.Length > 0) {
+                if (!decimal.TryParse(lblResult.Text, out decimal result))
+                    lblResult.Text = lblResult.Text.Substring(0, lblResult.Text.Length - 1);
                 decimal num = decimal.Parse(lblResult.Text);
                 NumberFormatInfo nfi = new CultureInfo("it-IT", false).NumberFormat;
                 int decimalSeparatorPosition = lblResult.Text.IndexOf(',');
@@ -102,15 +107,13 @@ namespace Calculator
                 lblResult.Text = stOut;
             }
 
-            if (lblResult.Text.Length > 16) lblResult.Text = lblResult.Text.Substring(0, 16);   
-            if (lblResult.Text.Length > 11)
+            int textWidth = TextRenderer.MeasureText(lblResult.Text, lblResult.Font).Width
+                + 2 * LBLRESULT_DEFAULT_H_PADDING;
+            if (textWidth > 0)
             {
-                float delta = (lblResult.Text.Length - 11) * (float)2.8;
-                lblResult.Font = new Font("Segoe UI", LBLRESULT_DEFAULT_FONT_SIZE - delta, FontStyle.Regular);
-            }
-            else
-            {
-                lblResult.Font = new Font("Segoe UI", LBLRESULT_DEFAULT_FONT_SIZE, FontStyle.Regular);
+                float newFontSize = lblResult.Font.Size * (((float)lblResult.Size.Width - LBLRESULT_DEFAULT_H_PADDING) / textWidth);
+                if (newFontSize > LBLRESULT_DEFAULT_FONT_SIZE) newFontSize = LBLRESULT_DEFAULT_FONT_SIZE;
+                lblResult.Font = new Font("Segoe UI", newFontSize, FontStyle.Regular);
             }
         }
 
