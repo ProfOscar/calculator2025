@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -86,6 +87,21 @@ namespace Calculator
 
         private void LblResult_TextChanged(object sender, EventArgs e)
         {
+            // Formattazione adeguata dei numeri con separatore decimale e separatore delle migliaia
+            if (lblResult.Text.Length > 0) {
+                decimal num = decimal.Parse(lblResult.Text);
+                NumberFormatInfo nfi = new CultureInfo("it-IT", false).NumberFormat;
+                int decimalSeparatorPosition = lblResult.Text.IndexOf(',');
+                if (decimalSeparatorPosition == -1)
+                    nfi.NumberDecimalDigits = 0;
+                else
+                    nfi.NumberDecimalDigits = lblResult.Text.Length - decimalSeparatorPosition - 1;
+                string stOut = num.ToString("N", nfi);
+                if (decimalSeparatorPosition == lblResult.Text.Length - 1)
+                    stOut += ",";
+                lblResult.Text = stOut;
+            }
+
             if (lblResult.Text.Length > 16) lblResult.Text = lblResult.Text.Substring(0, 16);   
             if (lblResult.Text.Length > 11)
             {
