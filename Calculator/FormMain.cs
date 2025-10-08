@@ -62,6 +62,10 @@ namespace Calculator
             { new BtnStruct('\u00B1', SymbolType.PlusMinusSign), new BtnStruct('0', SymbolType.Number), new BtnStruct(',', SymbolType.DecimalPoint), new BtnStruct('=', SymbolType.EqualSign) }
         };
 
+        char lastOperator = ' ';
+        decimal operand1, operand2, result;
+        BtnStruct previousBtnStruct;
+
         public FormMain()
         {
             InitializeComponent();
@@ -168,10 +172,12 @@ namespace Calculator
             switch (btnStruct.Type)
             {
                 case SymbolType.Number:
-                    if (lblResult.Text == "0") lblResult.Text = "";
+                    if (lblResult.Text == "0" || previousBtnStruct.Type == SymbolType.Operator) 
+                        lblResult.Text = "";
                     lblResult.Text += btn.Text;
                     break;
                 case SymbolType.Operator:
+                    ManageOperator(btnStruct);
                     break;
                 case SymbolType.EqualSign:
                     break;
@@ -194,6 +200,38 @@ namespace Calculator
                 case SymbolType.ClearAll:
                     lblResult.Text = "0";
                     break;
+            }
+            previousBtnStruct = btnStruct;
+        }
+
+        private void ManageOperator(BtnStruct btnStruct)
+        {
+            if (lastOperator == ' ')
+            {
+                operand1 = decimal.Parse(lblResult.Text);
+                lastOperator = btnStruct.Content;
+            }
+            else
+            {
+                operand2 = decimal.Parse(lblResult.Text);
+                switch (lastOperator)
+                {
+                    case '+':
+                        result = operand1 + operand2;
+                        break;
+                    case '-':
+                        result = operand1 - operand2;
+                        break;
+                    case 'x':
+                        result = operand1 * operand2;
+                        break;
+                    case '\u00F7':
+                        result = operand1 / operand2;
+                        break;
+                }
+                operand1 = result;
+                lastOperator = btnStruct.Content;
+                lblResult.Text = result.ToString();
             }
         }
     }
