@@ -189,19 +189,30 @@ namespace Calculator
             switch (btnStruct.Type)
             {
                 case SymbolType.Number:
-                    if (lblResult.Text == "0" || previousBtnStruct.Type == SymbolType.Operator)
-                        lblResult.Text = "";
-                    lblResult.Text += btn.Text;
+                    if(previousBtnStruct.Type== SymbolType.EqualSign)
+                    {
+                        ClearAll();
+						lblResult.Text = btn.Text;
+					}
+                    else
+                    {
+						if (lblResult.Text == "0" || previousBtnStruct.Type == SymbolType.Operator)
+							lblResult.Text = "";
+						lblResult.Text += btn.Text;
+					}
                     break;
                 case SymbolType.Operator:
                     ManageOperator(btnStruct);
                     break;
                 case SymbolType.EqualSign:
                     ManageOperator(btnStruct);
-                    operand1 = result;
+                    if (lastOperator == '=') 
+                        result = operand1;
                     break;
                 case SymbolType.DecimalPoint:
-                    if (!lblResult.Text.Contains(",")) lblResult.Text += ",";
+					if (previousBtnStruct.Type == SymbolType.EqualSign)
+                        ClearAll();
+					else if (!lblResult.Text.Contains(",")) lblResult.Text += ",";
                     break;
                 case SymbolType.PlusMinusSign:
                     if (lblResult.Text != "0")
@@ -209,12 +220,17 @@ namespace Calculator
                             lblResult.Text = "-" + lblResult.Text;
                         else
                             lblResult.Text = lblResult.Text.Substring(1);
-                    if (previousBtnStruct.Type == SymbolType.Operator
-                        || previousBtnStruct.Type == SymbolType.EqualSign)
-                    {
-                        operand1 = -operand1;
-                    }
-                    break;
+                    decimal current = decimal.Parse(lblResult.Text);
+					if (previousBtnStruct.Type == SymbolType.EqualSign)
+					{
+						result = current;
+						operand1 = result;
+					}
+					else if (previousBtnStruct.Type == SymbolType.Operator)
+					{
+						operand2 = current;
+					}
+					break;
                 case SymbolType.Backspace:
                     if (previousBtnStruct.Type != SymbolType.Operator
                         && previousBtnStruct.Type != SymbolType.EqualSign)
@@ -226,21 +242,16 @@ namespace Calculator
                     break;
                 case SymbolType.ClearEntry:
                 case SymbolType.ClearAll:
-                    operand1 = operand2 = result = 0;
-                    lastOperator = ' ';
-                    previousBtnStruct = default;
-                    lblInfo.Text = "";
-                    lblResult.Text = "0";
+                    ClearAll();
                     break;
             }
-            if (btnStruct.Type != SymbolType.Backspace)
+            if (btnStruct.Type != SymbolType.Backspace && btnStruct.Type != SymbolType.PlusMinusSign)
                 previousBtnStruct = btnStruct;
         }
 
         private async void ManageOperator(BtnStruct btnStruct)
         {
-            if (previousBtnStruct.Type == SymbolType.Operator
-                || previousBtnStruct.Type == SymbolType.PlusMinusSign)
+            if (previousBtnStruct.Type == SymbolType.Operator)
             {
                 lastOperator = btnStruct.Content;
             }
@@ -294,7 +305,16 @@ namespace Calculator
             if (btnStruct.Type != SymbolType.EqualSign)
                 lblInfo.Text = operand1 + " " + lastOperator;
             else
-                lblInfo.Text = $"{operand1} {lastOperator} {operand2} =";
+                lblInfo.Text = lastOperator == '=' ? $"{operand1} =" : $"{operand1} {lastOperator} {operand2} =";
         }
+
+        private void ClearAll()
+        {
+			operand1 = operand2 = result = 0;
+			lastOperator = ' ';
+			previousBtnStruct = default;
+			lblInfo.Text = "";
+			lblResult.Text = "0";
+		}
     }
 }
