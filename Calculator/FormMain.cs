@@ -29,6 +29,7 @@ namespace Calculator
         {
             Number,
             Operator,
+            SpecialOperator,
             EqualSign,
             DecimalPoint,
             PlusMinusSign,
@@ -56,7 +57,7 @@ namespace Calculator
         private BtnStruct[,] buttons =
         {
             { new BtnStruct('%'), new BtnStruct('\u0152', SymbolType.ClearEntry), new BtnStruct('C', SymbolType.ClearAll), new BtnStruct('\u232B', SymbolType.Backspace) },
-            { new BtnStruct('\u215F'), new BtnStruct('\u00B2'), new BtnStruct('\u221A'), new BtnStruct('\u00F7', SymbolType.Operator) },
+            { new BtnStruct('\u215F', SymbolType.SpecialOperator), new BtnStruct('\u00B2', SymbolType.SpecialOperator), new BtnStruct('\u221A', SymbolType.SpecialOperator), new BtnStruct('\u00F7', SymbolType.Operator) },
             { new BtnStruct('7', SymbolType.Number), new BtnStruct('8', SymbolType.Number), new BtnStruct('9', SymbolType.Number), new BtnStruct('x', SymbolType.Operator) },
             { new BtnStruct('4', SymbolType.Number), new BtnStruct('5', SymbolType.Number), new BtnStruct('6', SymbolType.Number), new BtnStruct('-', SymbolType.Operator) },
             { new BtnStruct('1', SymbolType.Number), new BtnStruct('2', SymbolType.Number), new BtnStruct('3', SymbolType.Number), new BtnStruct('+', SymbolType.Operator) },
@@ -161,6 +162,7 @@ namespace Calculator
                             button.BackColor = NUMBER_BKG;
                             break;
                         case SymbolType.Operator:
+                        case SymbolType.SpecialOperator:
                             button.BackColor = OPERATOR_BKG;
                             break;
                         case SymbolType.EqualSign:
@@ -203,6 +205,9 @@ namespace Calculator
                     break;
                 case SymbolType.Operator:
                     ManageOperator(btnStruct);
+                    break;
+                case SymbolType.SpecialOperator:
+                    ManageSpecialOperator(btnStruct);
                     break;
                 case SymbolType.EqualSign:
                     ManageOperator(btnStruct);
@@ -249,7 +254,29 @@ namespace Calculator
                 previousBtnStruct = btnStruct;
         }
 
-        private async void ManageOperator(BtnStruct btnStruct)
+		private void ManageSpecialOperator(BtnStruct btnStruct)
+		{
+            operand2 = decimal.Parse(lblResult.Text);
+			switch (btnStruct.Content) {
+                case '\u215F':
+                    if (operand2 == 0)
+                    {
+                        ClearAll();
+                    }
+                    else
+                    {
+						operand2 = 1 / operand2;
+					}
+                    break;
+                case '\u00B2':
+                    break;
+                case '\u221A':
+                    break;
+			}
+            lblResult.Text = operand2.ToString();
+		}
+
+		private async void ManageOperator(BtnStruct btnStruct)
         {
             if (previousBtnStruct.Type == SymbolType.Operator)
             {
