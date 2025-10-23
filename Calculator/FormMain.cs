@@ -56,7 +56,7 @@ namespace Calculator
 
 		private BtnStruct[,] buttons =
 		{
-			{ new BtnStruct('%'), new BtnStruct('\u0152', SymbolType.ClearEntry), new BtnStruct('C', SymbolType.ClearAll), new BtnStruct('\u232B', SymbolType.Backspace) },
+			{ new BtnStruct('%',SymbolType.SpecialOperator), new BtnStruct('\u0152', SymbolType.ClearEntry), new BtnStruct('C', SymbolType.ClearAll), new BtnStruct('\u232B', SymbolType.Backspace) },
 			{ new BtnStruct('\u215F', SymbolType.SpecialOperator), new BtnStruct('\u00B2', SymbolType.SpecialOperator), new BtnStruct('\u221A', SymbolType.SpecialOperator), new BtnStruct('\u00F7', SymbolType.Operator) },
 			{ new BtnStruct('7', SymbolType.Number), new BtnStruct('8', SymbolType.Number), new BtnStruct('9', SymbolType.Number), new BtnStruct('x', SymbolType.Operator) },
 			{ new BtnStruct('4', SymbolType.Number), new BtnStruct('5', SymbolType.Number), new BtnStruct('6', SymbolType.Number), new BtnStruct('-', SymbolType.Operator) },
@@ -262,6 +262,28 @@ namespace Calculator
 			operand2 = decimal.Parse(lblResult.Text);
 			switch (btnStruct.Content)
 			{
+				case '%':
+					if (operand1 == 0)
+					{
+						ClearAll();
+					}
+					else
+					{
+						switch (lastOperator)
+						{
+							case '+':
+							case '-':
+								operand2 = (operand1 * operand2) / 100;
+								lblInfo.Text += $" {operand2}";
+								break;
+							case 'x':
+							case '\u00F7':
+								operand2 = operand2 / 100;
+								lblInfo.Text += $" {operand2}";
+								break;
+						}
+					}
+					break;
 				case '\u215F':  // 1/x
 					if (operand2 == 0)
 					{
