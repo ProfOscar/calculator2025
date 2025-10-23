@@ -254,17 +254,21 @@ namespace Calculator
                 previousBtnStruct = btnStruct;
         }
 
-		private void ManageSpecialOperator(BtnStruct btnStruct)
+		private async void ManageSpecialOperator(BtnStruct btnStruct)
 		{
             operand2 = decimal.Parse(lblResult.Text);
 			switch (btnStruct.Content) {
                 case '\u215F':
                     if (operand2 == 0)
                     {
-                        ClearAll();
+						string temp = lblInfo.Text;
+						lblInfo.Text = "Impossibile dividere per zero";
+						await Task.Delay(2000);
+						lblInfo.Text = temp;
                     }
                     else
                     {
+                        lblInfo.Text += $" 1/{operand2}";
 						operand2 = 1 / operand2;
 					}
                     break;
