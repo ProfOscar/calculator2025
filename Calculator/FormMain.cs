@@ -258,7 +258,7 @@ namespace Calculator
 		{
             operand2 = decimal.Parse(lblResult.Text);
 			switch (btnStruct.Content) {
-                case '\u215F':
+                case '\u215F':  // 1/x
                     if (operand2 == 0)
                     {
 						string temp = lblInfo.Text;
@@ -272,10 +272,24 @@ namespace Calculator
 						operand2 = 1 / operand2;
 					}
                     break;
-                case '\u00B2':
-                    break;
-                case '\u221A':
-                    break;
+                case '\u00B2':  // x al quadrato
+					lblInfo.Text += $" sqr({operand2})";
+                    operand2 = (decimal)Math.Pow((double)operand2, 2);
+					break;
+                case '\u221A':  // radice quadrata di x
+					if (operand2 < 0)
+					{
+						string temp = lblInfo.Text;
+						lblInfo.Text = "Input non valido";
+						await Task.Delay(2000);
+						lblInfo.Text = temp;
+					}
+					else
+					{
+						lblInfo.Text += $" \u221A({operand2})";
+                        operand2 = (decimal)Math.Sqrt((double)operand2);
+					}
+					break;
 			}
             lblResult.Text = operand2.ToString();
 		}
