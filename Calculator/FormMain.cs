@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -41,9 +35,9 @@ namespace Calculator
 
 		public struct BtnStruct
 		{
-			public char Content;
+			public string Content;
 			public SymbolType Type;
-			public BtnStruct(char content, SymbolType type = SymbolType.Undefined)
+			public BtnStruct(string content, SymbolType type = SymbolType.Undefined)
 			{
 				this.Content = content;
 				this.Type = type;
@@ -56,15 +50,15 @@ namespace Calculator
 
 		private BtnStruct[,] buttons =
 		{
-			{ new BtnStruct('%',SymbolType.SpecialOperator), new BtnStruct('\u0152', SymbolType.ClearEntry), new BtnStruct('C', SymbolType.ClearAll), new BtnStruct('\u232B', SymbolType.Backspace) },
-			{ new BtnStruct('\u215F', SymbolType.SpecialOperator), new BtnStruct('\u00B2', SymbolType.SpecialOperator), new BtnStruct('\u221A', SymbolType.SpecialOperator), new BtnStruct('\u00F7', SymbolType.Operator) },
-			{ new BtnStruct('7', SymbolType.Number), new BtnStruct('8', SymbolType.Number), new BtnStruct('9', SymbolType.Number), new BtnStruct('x', SymbolType.Operator) },
-			{ new BtnStruct('4', SymbolType.Number), new BtnStruct('5', SymbolType.Number), new BtnStruct('6', SymbolType.Number), new BtnStruct('-', SymbolType.Operator) },
-			{ new BtnStruct('1', SymbolType.Number), new BtnStruct('2', SymbolType.Number), new BtnStruct('3', SymbolType.Number), new BtnStruct('+', SymbolType.Operator) },
-			{ new BtnStruct('\u00B1', SymbolType.PlusMinusSign), new BtnStruct('0', SymbolType.Number), new BtnStruct(',', SymbolType.DecimalPoint), new BtnStruct('=', SymbolType.EqualSign) }
+			{ new BtnStruct("%",SymbolType.SpecialOperator), new BtnStruct("\u0152", SymbolType.ClearEntry), new BtnStruct("C", SymbolType.ClearAll), new BtnStruct("\u232B", SymbolType.Backspace) },
+			{ new BtnStruct("⅟𝑥", SymbolType.SpecialOperator), new BtnStruct("𝑥²", SymbolType.SpecialOperator), new BtnStruct("√𝑥", SymbolType.SpecialOperator), new BtnStruct("\u00F7", SymbolType.Operator) },
+			{ new BtnStruct("7", SymbolType.Number), new BtnStruct("8", SymbolType.Number), new BtnStruct("9", SymbolType.Number), new BtnStruct("x", SymbolType.Operator) },
+			{ new BtnStruct("4", SymbolType.Number), new BtnStruct("5", SymbolType.Number), new BtnStruct("6", SymbolType.Number), new BtnStruct("-", SymbolType.Operator) },
+			{ new BtnStruct("1", SymbolType.Number), new BtnStruct("2", SymbolType.Number), new BtnStruct("3", SymbolType.Number), new BtnStruct("+", SymbolType.Operator) },
+			{ new BtnStruct("\u00B1", SymbolType.PlusMinusSign), new BtnStruct("0", SymbolType.Number), new BtnStruct(",", SymbolType.DecimalPoint), new BtnStruct("=", SymbolType.EqualSign) }
 		};
 
-		char lastOperator = ' ';
+		string lastOperator = " ";
 		decimal operand1, operand2, result;
 		BtnStruct previousBtnStruct;
 
@@ -214,7 +208,7 @@ namespace Calculator
 					break;
 				case SymbolType.EqualSign:
 					ManageOperator(btnStruct);
-					if (lastOperator == '=')
+					if (lastOperator == "=")
 						result = operand1;
 					break;
 				case SymbolType.DecimalPoint:
@@ -262,7 +256,7 @@ namespace Calculator
 			operand2 = decimal.Parse(lblResult.Text);
 			switch (btnStruct.Content)
 			{
-				case '%':
+				case "%":
 					if (operand1 == 0)
 					{
 						ClearAll();
@@ -271,20 +265,20 @@ namespace Calculator
 					{
 						switch (lastOperator)
 						{
-							case '+':
-							case '-':
+							case "+":
+							case "-":
 								operand2 = (operand1 * operand2) / 100;
 								lblInfo.Text += $" {operand2}";
 								break;
-							case 'x':
-							case '\u00F7':
+							case "x":
+							case "\u00F7":
 								operand2 = operand2 / 100;
 								lblInfo.Text += $" {operand2}";
 								break;
 						}
 					}
 					break;
-				case '\u215F':  // 1/x
+				case "⅟𝑥":
 					if (operand2 == 0)
 					{
 						string temp = lblInfo.Text;
@@ -298,11 +292,11 @@ namespace Calculator
 						operand2 = 1 / operand2;
 					}
 					break;
-				case '\u00B2':  // x al quadrato
+				case "𝑥²":
 					lblInfo.Text += $" sqr({operand2})";
 					operand2 = (decimal)Math.Pow((double)operand2, 2);
 					break;
-				case '\u221A':  // radice quadrata di x
+				case "√𝑥":
 					if (operand2 < 0)
 					{
 						string temp = lblInfo.Text;
@@ -328,7 +322,7 @@ namespace Calculator
 			}
 			else
 			{
-				if (lastOperator == ' ')
+				if (lastOperator == " ")
 				{
 					operand1 = decimal.Parse(lblResult.Text);
 					lastOperator = btnStruct.Content;
@@ -343,16 +337,16 @@ namespace Calculator
 						&& btnStruct.Type == SymbolType.Operator))
 						switch (lastOperator)
 						{
-							case '+':
+							case "+":
 								result = operand1 + operand2;
 								break;
-							case '-':
+							case "-":
 								result = operand1 - operand2;
 								break;
-							case 'x':
+							case "x":
 								result = operand1 * operand2;
 								break;
-							case '\u00F7':
+							case "\u00F7":
 								if (operand2 == 0)
 								{
 									string temp = lblInfo.Text;
@@ -376,13 +370,13 @@ namespace Calculator
 			if (btnStruct.Type != SymbolType.EqualSign)
 				lblInfo.Text = operand1 + " " + lastOperator;
 			else
-				lblInfo.Text = lastOperator == '=' ? $"{operand1} =" : $"{operand1} {lastOperator} {operand2} =";
+				lblInfo.Text = lastOperator == "=" ? $"{operand1} =" : $"{operand1} {lastOperator} {operand2} =";
 		}
 
 		private void ClearAll()
 		{
 			operand1 = operand2 = result = 0;
-			lastOperator = ' ';
+			lastOperator = " ";
 			previousBtnStruct = default;
 			lblInfo.Text = "";
 			lblResult.Text = "0";
